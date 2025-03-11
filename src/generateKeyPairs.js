@@ -1,12 +1,8 @@
 import { Account, Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
-
-// Convert Uint8Array to hex using native JavaScript
-function bytesToHex(bytes) {
-  return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
-}
+import { bytesToHex } from "./utils.js";
 
 // Specify which network to connect to via AptosConfig
-async function example() {
+async function generateKeyPair() {
  
   // Setup the client
   const config = new AptosConfig({ network: Network.TESTNET });
@@ -23,10 +19,10 @@ async function example() {
   // Convert public key bytes to hex
   const publicKeyHex = bytesToHex(account.publicKey.key.data);
   
-  console.log('Account Address (hex):', addressHex);
-  console.log('Private Key (hex):', privateKeyHex);
-  console.log('Public Key (hex):', publicKeyHex);
+  console.log('Aptos Account Address:', addressHex);
+  console.log('Public Key:', publicKeyHex);
+  console.log('Private Key:', privateKeyHex);
 }
  
-example()
+generateKeyPair()
 
