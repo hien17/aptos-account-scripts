@@ -27,3 +27,12 @@ Aptos Account Address: 0xc1e5aff7b9a0cc4e7ccff40f48d5917658a7493ae8f7840314785e5
 Public Key: 0x5b20d47b222761e295dae2016b0e57e26a5f2720d12dccb476274abd4014f52d
 Private Key: 0xdd7348df3e59318252598107bbd375ed3118476bbcc9ff03d36e93a2bcec1595
 ```
+
+Checking private key:
+```bash
+node src/checkingPrivateKey.js
+```
+
+Checking private key with AIP-80 (current format):
+```bash
+node src/checkingPrivateKeyAIP-80.js
