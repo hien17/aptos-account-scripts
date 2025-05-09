@@ -5,6 +5,8 @@ import { Ed25519PrivateKey, Ed25519Account } from "@aptos-labs/ts-sdk";
 const privateKeys = [
     "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
     "956d36cd598f0a6c9f7a2e095d9a59401614665f04e7ac7eadf67df415659644",
+    "ed25519-priv-0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    "ed25519-priv-956d36cd598f0a6c9f7a2e095d9a59401614665f04e7ac7eadf67df415659644",
     "wrong format private key"
 ]
 
@@ -15,29 +17,40 @@ async function checkingPrivateKey(privateKey) {
         return;
     }
 
-    console.log(`\n--- Checking private key: ${privateKey.substring(0, 4)}... ${privateKey.substring(privateKey.length - 4)} ---`);
-
+    console.log(`\n--- Checking private key: ${privateKey.substring(0, Math.min(10, privateKey.length))}... ---`);
+    
     try {
-        // Setup the client
-        const config = new AptosConfig({ network: Network.TESTNET });
-        const aptos = new Aptos(config);
-
-        // Create Aptos account from private key
-        // This line will throw an error if the privateKey format is invalid
-        const ed25519Key = new Ed25519PrivateKey(privateKey);
-        const account = Account.fromPrivateKey({ privateKey: ed25519Key, aptosConfig: config });
-
-        console.log('✅ Valid Private Key');
-        console.log('   Aptos Account Address:', account.accountAddress.toString());
-
-    } catch (error) {
-        console.error(`❌ Invalid Private Key: ${privateKey}`);
-        // Optionally log the specific error for debugging
-        // console.error('   Error details:', error.message);
-        if (error.invalidReason) {
-             console.error(`   Reason: ${error.invalidReason} (${error.message})`);
+        // Check if this is already an AIP-80 formatted key
+        if (privateKey.startsWith("ed25519-priv-")) {
+            // This is already using the new AIP-80 standard
+            const config = new AptosConfig({ network: Network.TESTNET });
+            const ed25519Key = new Ed25519PrivateKey(privateKey);
+            const account = new Ed25519Account({ privateKey: ed25519Key });
+            
+            console.log('✅ Valid Private Key (AIP-80 Standard)');
+            console.log('   Account Address:', account.accountAddress.toString());
+            console.log('   Private Key:', bytesToHex(account.privateKey.signingKey.data));
+            console.log('   Public Key:', bytesToHex(account.publicKey.key.data));
+            return;
         } else {
-             console.error('   Error details:', error);
+            // This is using the old standard without the prefix
+            const config = new AptosConfig({ network: Network.TESTNET });
+            const ed25519Key = new Ed25519PrivateKey(privateKey);
+            const account = new Ed25519Account({ privateKey: ed25519Key });
+            
+            console.log('✅ Valid Private Key (Old Standard)');
+            console.log('   Account Address:', account.accountAddress.toString());
+            console.log('   Private Key:', bytesToHex(account.privateKey.signingKey.data));
+            console.log('   Public Key:', bytesToHex(account.publicKey.key.data));
+            return;
+        }
+    } catch (error) {
+        // Key is invalid
+        console.error(`❌ Invalid Private Key: ${privateKey}`);
+        if (error.invalidReason) {
+            console.error(`   Reason: ${error.invalidReason} (${error.message})`);
+        } else {
+            console.error(`   Error: ${error.message}`);
         }
     }
 }

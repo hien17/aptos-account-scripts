@@ -28,11 +28,7 @@ Public Key: 0x5b20d47b222761e295dae2016b0e57e26a5f2720d12dccb476274abd4014f52d
 Private Key: 0xdd7348df3e59318252598107bbd375ed3118476bbcc9ff03d36e93a2bcec1595
 ```
 
-Checking private key:
+Checking private key with both formats (old standard and AIP-80 standard, AIP-80 is the current format with the prefix "ed25519-priv-" while the old standard is without the prefix and starts with "0x"):
 ```bash
 node src/checkingPrivateKey.js
 ```
-
-Checking private key with AIP-80 (current format):
-```bash
-node src/checkingPrivateKeyAIP-80.js
